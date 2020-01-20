@@ -87,12 +87,12 @@ export class Lexer {
         this.tokens = Array.from(lexer);
     }
 
-    next() {
-        if (this.tokens[this.pos + 1]) {
+    walk() {
+        if (this.pos === -1 || this.tokens[this.pos]) {
             return this.tokens[++this.pos];
         }
 
-        return undefined;
+        return this.tokens[this.pos];
     }
 
     current() {

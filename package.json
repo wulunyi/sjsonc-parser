@@ -1,0 +1,42 @@
+{
+    "name": "sjsonc-parser",
+    "version": "1.0.0",
+    "description": "parser json/jsonc/object",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest",
+        "check": "gts check",
+        "clean": "gts clean",
+        "compile": "tsc -p .",
+        "fix": "gts fix",
+        "prepare": "npm run compile",
+        "posttest": "npm run check"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wulunyi/sjsonc-parser.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/wulunyi/sjsonc-parser/issues"
+    },
+    "homepage": "https://github.com/wulunyi/sjsonc-parser#readme",
+    "devDependencies": {
+        "@types/jest": "^24.0.25",
+        "@types/moo": "^0.5.1",
+        "@types/node": "^10.0.3",
+        "@types/ramda": "^0.26.39",
+        "gts": "^1.1.2",
+        "jest": "^24.9.0",
+        "ts-jest": "^24.2.0",
+        "ts-node": "^8.5.4",
+        "tsconfig-paths": "^3.9.0",
+        "typescript": "~3.7.0"
+    },
+    "dependencies": {
+        "moo": "^0.5.1",
+        "ramda": "^0.26.1"
+    }
+}
