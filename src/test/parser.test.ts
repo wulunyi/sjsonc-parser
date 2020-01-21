@@ -1,25 +1,40 @@
 import { parse } from '../parser';
-import {
-    createProgram,
-    createObjectPattern,
-    createArrayPattern,
-    createProperty,
-} from '../parser/helper';
 
 describe('Test Parser', () => {
     it('Test Object', () => {
         const ast = parse(`{}`);
 
-        expect(ast).toEqual(createProgram([createObjectPattern()]));
-    });
-
-    it('Test Array', () => {
-        const ast = parse(`[]`);
-
-        expect(ast).toEqual(createProgram([createArrayPattern()]));
-    });
-
-    it('Test property', () => {
-        const ast = parse(`{"name": "wly", age: 18, 'nick': 'aaa'}`);
+        expect(ast).toEqual({
+            type: 'Program',
+            body: [
+                {
+                    type: 'ObjectPattern',
+                    children: [],
+                    loc: {
+                        start: {
+                            line: 1,
+                            column: 1,
+                        },
+                        end: {
+                            line: 1,
+                            column: 2,
+                        },
+                    },
+                },
+            ],
+            start: 1,
+            end: 2,
+            comments: [],
+            loc: {
+                start: {
+                    line: 1,
+                    column: 1,
+                },
+                end: {
+                    line: 1,
+                    column: 2,
+                },
+            },
+        });
     });
 });

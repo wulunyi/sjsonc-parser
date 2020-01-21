@@ -14,16 +14,16 @@ export type Pattern = ArrayPattern | ObjectPattern;
 export interface Program extends BaseNode {
     type: 'Program';
     body: Pattern[];
-    // start: number;
-    // end: number;
-    // source: string;
+    start: number;
+    end: number;
     comments: Comment[];
+    loc: SourceLocation;
 }
 
 export interface ObjectPattern extends BaseNode {
     type: 'ObjectPattern';
     children: ObjectProperty[];
-    // loc: Loc;
+    loc: SourceLocation;
 }
 
 export type ValueType = ObjectPattern | ArrayPattern | Literal;
@@ -32,13 +32,14 @@ export interface ObjectProperty extends BaseNode {
     type: 'ObjectProperty';
     key: Identifier;
     value: ValueType;
+    loc: SourceLocation;
 }
 
 export interface Identifier {
     type: 'Identifier';
     value: string;
     raw: string;
-    // loc: Loc;
+    loc: SourceLocation;
 }
 
 export interface Location {
@@ -54,7 +55,7 @@ export interface SourceLocation {
 export interface ArrayPattern extends BaseNode {
     type: 'ArrayPattern';
     children: ValueType[];
-    // loc: Loc;
+    loc: SourceLocation;
 }
 
 export type BaseType = boolean | string | null | number;
@@ -63,6 +64,7 @@ export interface Literal {
     type: 'Literal';
     value: BaseType;
     raw: string;
+    loc: SourceLocation;
 }
 
 export interface BaseComment {

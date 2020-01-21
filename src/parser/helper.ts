@@ -11,6 +11,8 @@ import {
     LineComment,
     BlockComment,
     Pattern,
+    Location,
+    Comment,
 } from './types';
 import {
     or,
@@ -27,56 +29,80 @@ import {
     always,
 } from 'ramda';
 import * as moo from 'moo';
-import { equal } from 'assert';
 
-export function createProgram(body: Pattern[] = []): Program {
+export function createProgram(
+    loc: SourceLocation,
+    body: Pattern[],
+    comments: Comment[]
+): Program {
     return {
         type: 'Program',
+        start: loc.start.column,
+        end: loc.end.column,
+        loc,
         body,
-        comments: [],
+        comments,
     };
 }
 
 export function createObjectPattern(
+    loc: SourceLocation,
     children: ObjectProperty[] = []
 ): ObjectPattern {
     return {
         type: 'ObjectPattern',
         children,
+        loc,
     };
 }
 
 export function createProperty(
     key: Identifier,
-    value: ValueType
+    value: ValueType,
+    loc: SourceLocation
 ): ObjectProperty {
     return {
         type: 'ObjectProperty',
         key,
         value,
+        loc,
     };
 }
 
-export function createIdentifier(value: string, raw: string): Identifier {
+export function createIdentifier(
+    value: string,
+    raw: string,
+    loc: SourceLocation
+): Identifier {
     return {
         type: 'Identifier',
         value,
         raw,
+        loc,
     };
 }
 
-export function createArrayPattern(children: ValueType[] = []): ArrayPattern {
+export function createArrayPattern(
+    loc: SourceLocation,
+    children: ValueType[] = []
+): ArrayPattern {
     return {
         type: 'ArrayPattern',
         children,
+        loc,
     };
 }
 
-export function createLiteral(value: BaseType, raw: string): Literal {
+export function createLiteral(
+    value: BaseType,
+    raw: string,
+    loc: SourceLocation
+): Literal {
     return {
         type: 'Literal',
         value,
         raw,
+        loc,
     };
 }
 
@@ -105,24 +131,32 @@ const addSubtract1 = pipe(
 
 const equalOne = equals(1);
 
-export function createSourceLocation(token: moo.Token): SourceLocation {
+export function startLocation(token: moo.Token): Location {
+    return {
+        column: token.col,
+        line: token.line,
+    };
+}
+
+export function endLocation(token: moo.Token): Location {
     const arr = token.text.split('\n');
     const len = arr.length;
     const lastStrLen = last(arr)!.length;
 
     return {
-        start: {
-            column: token.col,
-            line: token.line,
-        },
-        end: {
-            line: addSubtract1(token.line, len),
-            column: ifElse(
-                equalOne,
-                always(addSubtract1(lastStrLen, token.col)),
-                always(lastStrLen)
-            )(len),
-        },
+        line: addSubtract1(token.line, len),
+        column: ifElse(
+            equalOne,
+            always(addSubtract1(lastStrLen, token.col)),
+            always(lastStrLen)
+        )(len),
+    };
+}
+
+export function createSourceLocation(token: moo.Token): SourceLocation {
+    return {
+        start: startLocation(token),
+        end: endLocation(token),
     };
 }
 

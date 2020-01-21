@@ -4,6 +4,9 @@ import {
     ObjectProperty,
     ValueType,
     ArrayPattern,
+    Pattern,
+    Comment,
+    SourceLocation,
 } from './types';
 import {
     createProgram,
@@ -23,13 +26,16 @@ import {
     createBlockComment,
     isLineCommentToken,
     isBlockCommentToken,
+    createSourceLocation,
+    endLocation,
 } from './helper';
 import { Lexer } from '../lexer';
-import { pipe, not } from 'ramda';
+import { pipe, not, head, last, isEmpty } from 'ramda';
 
 export function parse(code = ''): Program {
-    const result = createProgram();
     const lexer = Lexer.create(code);
+    const patterns: Pattern[] = [];
+    const comments: Comment[] = [];
 
     const walk = () => {
         while (lexer.walk() !== undefined && isNotUseToken(lexer.current)) {}
@@ -39,14 +45,14 @@ export function parse(code = ''): Program {
 
     const collectComments = (token: moo.Token) => {
         if (isLineCommentToken(token)) {
-            result.comments.push(createLineComment(token));
+            comments.push(createLineComment(token));
         } else if (isBlockCommentToken(token)) {
-            result.comments.push(createBlockComment(token));
+            comments.push(createBlockComment(token));
         }
     };
 
     const parseObject = (): ObjectPattern => {
-        const object = createObjectPattern();
+        const object = createObjectPattern(createSourceLocation(lexer.current));
 
         while (isNotCloseBracket(walk())) {
             const token = lexer.current;
@@ -79,24 +85,33 @@ export function parse(code = ''): Program {
             }
         }
 
+        object.loc.end = endLocation(lexer.current);
+
         return object;
     };
 
     const parseProperty = (pToken: moo.Token): ObjectProperty => {
-        const key = createIdentifier(pToken.value, pToken.text);
+        const key = createIdentifier(
+            pToken.value,
+            pToken.text,
+            createSourceLocation(pToken)
+        );
 
-        const a = lexer;
         if (isColonToken(walk())) {
             const token = walk();
+            const value = parseValue(token);
 
-            return createProperty(key, parseValue(token));
+            return createProperty(key, value, {
+                start: key.loc.start,
+                end: value.loc.end,
+            });
         }
 
         throw new Error('语法错误');
     };
 
     const parseArray = (): ArrayPattern => {
-        const array = createArrayPattern();
+        const array = createArrayPattern(createSourceLocation(lexer.current));
 
         while (pipe(isRightBracketToken, not)(walk())) {
             const token = lexer.current;
@@ -116,6 +131,8 @@ export function parse(code = ''): Program {
             }
         }
 
+        array.loc.end = endLocation(lexer.current);
+
         return array;
     };
 
@@ -124,19 +141,39 @@ export function parse(code = ''): Program {
 
         switch (token.type) {
             case 'STRING':
-                value = createLiteral(token.value, token.text);
+                value = createLiteral(
+                    token.value,
+                    token.text,
+                    createSourceLocation(token)
+                );
                 break;
             case 'NUMBER':
-                value = createLiteral(Number(token.value), token.text);
+                value = createLiteral(
+                    Number(token.value),
+                    token.text,
+                    createSourceLocation(token)
+                );
                 break;
             case 'NULL':
-                value = createLiteral(null, token.text);
+                value = createLiteral(
+                    null,
+                    token.text,
+                    createSourceLocation(token)
+                );
                 break;
             case 'TRUE':
-                value = createLiteral(true, token.text);
+                value = createLiteral(
+                    true,
+                    token.text,
+                    createSourceLocation(token)
+                );
                 break;
             case 'FALSE':
-                value = createLiteral(false, token.text);
+                value = createLiteral(
+                    false,
+                    token.text,
+                    createSourceLocation(token)
+                );
                 break;
             case 'LEFT_BRACE':
                 value = parseObject();
@@ -162,17 +199,35 @@ export function parse(code = ''): Program {
 
         switch (token.type) {
             case 'LEFT_BRACE':
-                result.body.push(parseObject());
+                patterns.push(parseObject());
                 break;
             case 'LEFT_BRACKET':
-                result.body.push(parseArray());
+                patterns.push(parseArray());
                 break;
             default:
                 throw new Error('语法错误');
         }
     }
 
-    return result;
-}
+    let loc: SourceLocation;
 
-const a = parse(`{"name": "wly", age: 18, 'nick': 'aaa'}`);
+    if (isEmpty(patterns)) {
+        loc = {
+            start: {
+                column: 0,
+                line: 1,
+            },
+            end: {
+                column: 0,
+                line: 1,
+            },
+        };
+    } else {
+        loc = {
+            start: head(patterns)!.loc.start,
+            end: last(patterns)!.loc.end,
+        };
+    }
+
+    return createProgram(loc, patterns, comments);
+}
