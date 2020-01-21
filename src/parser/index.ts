@@ -13,31 +13,52 @@ import {
     createProperty,
     createArrayPattern,
     isNotUseToken,
-    isCloseBraceToken,
     isColonToken,
-    isCloseBracket,
+    isRightBracketToken,
+    isNotCloseBracket,
+    isCommaToken,
+    isRightBraceToken,
+    isCommentToken,
+    createLineComment,
+    createBlockComment,
+    isLineCommentToken,
+    isBlockCommentToken,
 } from './helper';
 import { Lexer } from '../lexer';
-import { pipe, propEq, not } from 'ramda';
+import { pipe, not } from 'ramda';
 
 export function parse(code = ''): Program {
     const result = createProgram();
     const lexer = Lexer.create(code);
 
     const walk = () => {
-        while (lexer.walk() !== undefined && isNotUseToken(lexer.current())) {}
+        while (lexer.walk() !== undefined && isNotUseToken(lexer.current)) {}
 
-        return lexer.current();
+        return lexer.current;
+    };
+
+    const collectComments = (token: moo.Token) => {
+        if (isLineCommentToken(token)) {
+            result.comments.push(createLineComment(token));
+        } else if (isBlockCommentToken(token)) {
+            result.comments.push(createBlockComment(token));
+        }
     };
 
     const parseObject = (): ObjectPattern => {
         const object = createObjectPattern();
 
-        while (pipe(isCloseBraceToken, not)(walk())) {
-            const token = lexer.current();
+        while (isNotCloseBracket(walk())) {
+            const token = lexer.current;
 
             if (token === undefined) {
                 throw new Error('语法错误');
+            }
+
+            if (isCommentToken(token)) {
+                collectComments(token);
+
+                continue;
             }
 
             switch (token.type) {
@@ -49,9 +70,9 @@ export function parse(code = ''): Program {
                     throw new Error('语法错误');
             }
 
-            if (propEq('type', 'COMMA')(walk())) {
+            if (isCommaToken(walk())) {
                 continue;
-            } else if (propEq('type', 'RIGHT_BRACE')(lexer.current())) {
+            } else if (isRightBraceToken(lexer.current)) {
                 break;
             } else {
                 throw new Error('语法错误');
@@ -64,6 +85,7 @@ export function parse(code = ''): Program {
     const parseProperty = (pToken: moo.Token): ObjectProperty => {
         const key = createIdentifier(pToken.value, pToken.text);
 
+        const a = lexer;
         if (isColonToken(walk())) {
             const token = walk();
 
@@ -76,8 +98,8 @@ export function parse(code = ''): Program {
     const parseArray = (): ArrayPattern => {
         const array = createArrayPattern();
 
-        while (pipe(isCloseBracket, not)(walk())) {
-            const token = lexer.current();
+        while (pipe(isRightBracketToken, not)(walk())) {
+            const token = lexer.current;
 
             if (token === undefined) {
                 throw new Error('语法错误');
@@ -85,9 +107,9 @@ export function parse(code = ''): Program {
 
             array.children.push(parseValue(token));
 
-            if (propEq('type', 'COMMA')(walk())) {
+            if (isCommaToken(walk())) {
                 continue;
-            } else if (propEq('type', 'RIGHT_BRACKET')(lexer.current())) {
+            } else if (isRightBracketToken(lexer.current)) {
                 break;
             } else {
                 throw new Error('语法错误');
@@ -130,7 +152,13 @@ export function parse(code = ''): Program {
     };
 
     while (walk() !== undefined) {
-        const token = lexer.current()!;
+        const token = lexer.current;
+
+        if (isCommentToken(token)) {
+            collectComments(token);
+
+            continue;
+        }
 
         switch (token.type) {
             case 'LEFT_BRACE':
@@ -146,3 +174,5 @@ export function parse(code = ''): Program {
 
     return result;
 }
+
+const a = parse(`{"name": "wly", age: 18, 'nick': 'aaa'}`);

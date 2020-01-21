@@ -4,7 +4,7 @@ describe('Tokenizer', () => {
     it('Tokenizer.create', () => {
         const tokenizer = Lexer.create('{}');
         expect(tokenizer).toBeInstanceOf(Lexer);
-        expect(tokenizer).toHaveProperty('next');
+        expect(tokenizer).toHaveProperty('walk');
         expect(tokenizer).toHaveProperty('current');
     });
 
@@ -12,6 +12,8 @@ describe('Tokenizer', () => {
         const tokenizer = Lexer.create('{}');
         expect(tokenizer.walk()).toHaveProperty('type', 'LEFT_BRACE');
         expect(tokenizer.walk()).toHaveProperty('type', 'RIGHT_BRACE');
+        expect(tokenizer.walk()).toBe(undefined);
+        expect(tokenizer.walk()).toBe(undefined);
     });
 
     it('scanner array', () => {
@@ -33,47 +35,61 @@ describe('Tokenizer', () => {
     it('scanner string', () => {
         const tokenizer = Lexer.create(`"aaaa"`);
         expect(tokenizer.walk()).toHaveProperty('type', 'STRING');
-        expect(tokenizer.current()).toHaveProperty('value', 'aaaa');
-        expect(tokenizer.current()).toHaveProperty('text', '"aaaa"');
+        expect(tokenizer.current).toHaveProperty('value', 'aaaa');
+        expect(tokenizer.current).toHaveProperty('text', '"aaaa"');
         const tokenizer1 = Lexer.create(`'aaaa'`);
         expect(tokenizer1.walk()).toHaveProperty('type', 'STRING');
-        expect(tokenizer1.current()).toHaveProperty('value', 'aaaa');
-        expect(tokenizer1.current()).toHaveProperty('text', "'aaaa'");
+        expect(tokenizer1.current).toHaveProperty('value', 'aaaa');
+        expect(tokenizer1.current).toHaveProperty('text', "'aaaa'");
     });
 
     it('scanner NumericLiteral', () => {
         const tokenizer = Lexer.create(`0 1 1.1 -1 -0.1 -1.1`);
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
-        expect(tokenizer.current()).toHaveProperty('value', '0');
+        expect(tokenizer.current).toHaveProperty('value', '0');
         tokenizer.walk();
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
-        expect(tokenizer.current()).toHaveProperty('value', '1');
+        expect(tokenizer.current).toHaveProperty('value', '1');
         tokenizer.walk();
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
-        expect(tokenizer.current()).toHaveProperty('value', '1.1');
+        expect(tokenizer.current).toHaveProperty('value', '1.1');
         tokenizer.walk();
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
-        expect(tokenizer.current()).toHaveProperty('value', '-1');
+        expect(tokenizer.current).toHaveProperty('value', '-1');
         tokenizer.walk();
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
-        expect(tokenizer.current()).toHaveProperty('value', '-0.1');
+        expect(tokenizer.current).toHaveProperty('value', '-0.1');
         tokenizer.walk();
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
-        expect(tokenizer.current()).toHaveProperty('value', '-1.1');
+        expect(tokenizer.current).toHaveProperty('value', '-1.1');
     });
 
     it('scanner IDENTIFIER', () => {
         const tokenizer = Lexer.create(`aaa true null false`);
         expect(tokenizer.walk()).toHaveProperty('type', 'IDENTIFIER');
-        expect(tokenizer.current()).toHaveProperty('value', 'aaa');
+        expect(tokenizer.current).toHaveProperty('value', 'aaa');
         expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
         expect(tokenizer.walk()).toHaveProperty('type', 'TRUE');
-        expect(tokenizer.current()).toHaveProperty('value', 'true');
+        expect(tokenizer.current).toHaveProperty('value', 'true');
         expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
         expect(tokenizer.walk()).toHaveProperty('type', 'NULL');
-        expect(tokenizer.current()).toHaveProperty('value', 'null');
+        expect(tokenizer.current).toHaveProperty('value', 'null');
         expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
         expect(tokenizer.walk()).toHaveProperty('type', 'FALSE');
-        expect(tokenizer.current()).toHaveProperty('value', 'false');
+        expect(tokenizer.current).toHaveProperty('value', 'false');
+    });
+
+    it('scanner LineComment', () => {
+        const tokenizer = Lexer.create(`// comment`);
+        expect(tokenizer.walk()).toHaveProperty('type', 'LINE_COMMENT');
+        expect(tokenizer.current).toHaveProperty('value', 'comment');
+    });
+
+    it('scanner BlockComment', () => {
+        const tokenizer = Lexer.create(`/** comment *//** aaa \n *  b */`);
+        expect(tokenizer.walk()).toHaveProperty('type', 'BLOCK_COMMENT');
+        expect(tokenizer.current).toHaveProperty('value', 'comment');
+        expect(tokenizer.walk()).toHaveProperty('type', 'BLOCK_COMMENT');
+        expect(tokenizer.current).toHaveProperty('value', 'aaa\nb');
     });
 });

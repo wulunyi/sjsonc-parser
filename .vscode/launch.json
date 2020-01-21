@@ -13,7 +13,7 @@
             "args": [
                 "-r",
                 "tsconfig-paths/register",
-                "${workspaceRoot}/src/cparser/index.ts",
+                "${workspaceRoot}/src/parser/index.ts",
             ],
             "env": {
                 "TS_NODE_FILES": true,

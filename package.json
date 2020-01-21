@@ -4,7 +4,7 @@
     "description": "parser json/jsonc/object",
     "main": "index.js",
     "scripts": {
-        "test": "jest",
+        "test": "jest --coverage",
         "check": "gts check",
         "clean": "gts clean",
         "compile": "tsc -p .",

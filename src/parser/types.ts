@@ -1,15 +1,23 @@
-export type Node = Program | ObjectPattern | ObjectProperty | ArrayPattern;
+export type Node =
+    | Program
+    | ObjectPattern
+    | ObjectProperty
+    | ArrayPattern
+    | BaseComment;
 
 export interface BaseNode {
     type: Node['type'];
 }
 
+export type Pattern = ArrayPattern | ObjectPattern;
+
 export interface Program extends BaseNode {
     type: 'Program';
-    body: Array<ArrayPattern | ObjectPattern>;
+    body: Pattern[];
     // start: number;
     // end: number;
     // source: string;
+    comments: Comment[];
 }
 
 export interface ObjectPattern extends BaseNode {
@@ -33,19 +41,15 @@ export interface Identifier {
     // loc: Loc;
 }
 
-// export interface Loc {
-//     start: {
-//         line: number;
-//         column: number;
-//         offset: number;
-//     };
-//     end: {
-//         line: number;
-//         column: number;
-//         offset: number;
-//     };
-//     source: null;
-// }
+export interface Location {
+    line: number;
+    column: number;
+}
+
+export interface SourceLocation {
+    start: Location;
+    end: Location;
+}
 
 export interface ArrayPattern extends BaseNode {
     type: 'ArrayPattern';
@@ -59,4 +63,22 @@ export interface Literal {
     type: 'Literal';
     value: BaseType;
     raw: string;
+}
+
+export interface BaseComment {
+    type: Comment['type'];
+    raw: string;
+    loc: SourceLocation;
+}
+
+export type Comment = LineComment | BlockComment;
+
+export interface LineComment extends BaseComment {
+    type: 'LineComment';
+    value: string;
+}
+
+export interface BlockComment extends BaseComment {
+    type: 'BlockComment';
+    value: string[];
 }

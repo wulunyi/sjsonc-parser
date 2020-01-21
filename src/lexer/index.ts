@@ -20,7 +20,7 @@ const pickStrValue = slice(1, -1);
 /**
  * 获取行级注释文本
  */
-const pickLineCommentValue = pipe(trim, (str: string) => str.slice(2));
+const pickLineCommentValue = pipe((str: string) => str.slice(2), trim);
 
 /**
  * 获取块级注释的文本数组
@@ -46,7 +46,7 @@ const lexer = moo.compile({
             value: pickStrValue,
         },
         {
-            match: /'(?:\\["\\]|[^\n"\\])*'/,
+            match: /'(?:\\['\\]|[^\n'\\])*?'/,
             value: pickStrValue,
         },
     ],
@@ -81,6 +81,10 @@ export class Lexer {
     tokens: moo.Token[] = [];
     pos = -1;
 
+    get current() {
+        return this.tokens[this.pos];
+    }
+
     constructor(readonly code: string) {
         lexer.reset(code);
 
@@ -92,10 +96,6 @@ export class Lexer {
             return this.tokens[++this.pos];
         }
 
-        return this.tokens[this.pos];
-    }
-
-    current() {
         return this.tokens[this.pos];
     }
 }
