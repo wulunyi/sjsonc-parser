@@ -19,7 +19,6 @@ import {
     propEq,
     pipe,
     not,
-    tail,
     last,
     add,
     subtract,

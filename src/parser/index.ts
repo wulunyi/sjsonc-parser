@@ -97,9 +97,16 @@ export function parse(code = ''): Program {
             createSourceLocation(pToken)
         );
 
-        if (isColonToken(walk())) {
-            const token = walk();
-            const value = parseValue(token);
+        while (isCommentToken(walk())) {
+            collectComments(lexer.current);
+        }
+
+        if (isColonToken(lexer.current)) {
+            while (isCommentToken(walk())) {
+                collectComments(lexer.current);
+            }
+
+            const value = parseValue(lexer.current);
 
             return createProperty(key, value, {
                 start: key.loc.start,
@@ -118,6 +125,12 @@ export function parse(code = ''): Program {
 
             if (token === undefined) {
                 throw new Error('语法错误');
+            }
+
+            if (isCommentToken(token)) {
+                collectComments(token);
+
+                continue;
             }
 
             array.children.push(parseValue(token));
