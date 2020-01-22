@@ -3,8 +3,6 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import cleanup from 'rollup-plugin-cleanup';
 import { uglify } from 'rollup-plugin-uglify';
-import dts from 'rollup-plugin-dts';
-import * as path from 'path';
 
 export default [
     {
@@ -40,14 +38,30 @@ export default [
             }),
         ],
     },
-    // {
-    //     input: 'src/index.ts',
-    //     output: [
-    //         {
-    //             file: 'lib/index.d.ts',
-    //             format: 'es',
-    //         },
-    //     ],
-    //     plugins: [dts()],
-    // },
+    {
+        input: 'src/index.ts',
+        output: {
+            file: 'es/index.js',
+            format: 'es',
+        },
+        external: ['ramda'],
+        plugins: [
+            rollupTypescript({
+                tsconfigDefaults: {
+                    compilerOptions: {
+                        module: 'ESNext',
+                        target: 'ESNext',
+                        declaration: false,
+                    },
+                },
+            }),
+            cleanup({ comments: 'none', extensions: ['ts'] }),
+            resolve(),
+            commonjs({
+                namedExports: {
+                    moo: ['compile', 'keywords'],
+                },
+            }),
+        ],
+    },
 ];

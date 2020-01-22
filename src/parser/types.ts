@@ -3,7 +3,9 @@ export type Node =
     | ObjectPattern
     | ObjectProperty
     | ArrayPattern
-    | BaseComment;
+    | BaseComment
+    | Literal
+    | Comment;
 
 export interface BaseNode {
     type: Node['type'];
@@ -60,14 +62,14 @@ export interface ArrayPattern extends BaseNode {
 
 export type BaseType = boolean | string | null | number;
 
-export interface Literal {
+export interface Literal extends BaseNode {
     type: 'Literal';
     value: BaseType;
     raw: string;
     loc: SourceLocation;
 }
 
-export interface BaseComment {
+export interface BaseComment extends BaseNode {
     type: Comment['type'];
     raw: string;
     loc: SourceLocation;
