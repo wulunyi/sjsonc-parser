@@ -78,6 +78,9 @@ export function parse(code = ''): Program {
 
             if (isCommaToken(walk())) {
                 continue;
+            } else if (isCommentToken(lexer.current)) {
+                collectComments(lexer.current);
+                continue;
             } else if (isRightBraceToken(lexer.current)) {
                 break;
             } else {
@@ -136,6 +139,9 @@ export function parse(code = ''): Program {
             array.children.push(parseValue(token));
 
             if (isCommaToken(walk())) {
+                continue;
+            } else if (isCommentToken(lexer.current)) {
+                collectComments(lexer.current);
                 continue;
             } else if (isRightBracketToken(lexer.current)) {
                 break;

@@ -1,6 +1,6 @@
 {
     "name": "sjsonc-parser",
-    "version": "1.0.0-beta0",
+    "version": "1.0.0-beta2",
     "description": "parser json/jsonc/object",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -14,7 +14,7 @@
         "posttest": "npm run check"
     },
     "files": [
-        "./lib"
+        "lib"
     ],
     "repository": {
         "type": "git",
