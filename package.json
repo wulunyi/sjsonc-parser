@@ -1,20 +1,21 @@
 {
     "name": "sjsonc-parser",
-    "version": "1.0.0-beta2",
+    "version": "1.0.0-beta5",
     "description": "parser json/jsonc/object",
     "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "types": "types/index.d.ts",
     "scripts": {
         "test": "jest --coverage",
         "check": "gts check",
         "clean": "gts clean",
-        "compile": "rollup -c ./rollup.config.js",
+        "compile": "rollup -c ./rollup.config.js -m",
         "fix": "gts fix",
         "prepare": "npm run test && npm run compile",
         "posttest": "npm run check"
     },
     "files": [
-        "lib"
+        "lib",
+        "types"
     ],
     "repository": {
         "type": "git",
