@@ -64,7 +64,11 @@ const lexer = moo.compile({
             FALSE: 'false',
         }),
     },
-    BLOCK_COMMENT: { match: /\/\*[\s\S]*?\*\//, value: pickBlockCommentValue },
+    BLOCK_COMMENT: {
+        match: /\/\*[\s\S]*?\*\//,
+        value: pickBlockCommentValue,
+        lineBreaks: true,
+    },
     LINE_COMMENT: {
         match: /\/\/[^\n]*/,
         value: pickLineCommentValue,

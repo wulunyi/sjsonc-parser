@@ -86,10 +86,13 @@ describe('Tokenizer', () => {
     });
 
     it('scanner BlockComment', () => {
-        const tokenizer = Lexer.create(`/** comment *//** aaa \n *  b */`);
+        const tokenizer = Lexer.create(`/** comment *//** aaa \n *  b */aa`);
         expect(tokenizer.walk()).toHaveProperty('type', 'BLOCK_COMMENT');
         expect(tokenizer.current).toHaveProperty('value', 'comment');
         expect(tokenizer.walk()).toHaveProperty('type', 'BLOCK_COMMENT');
         expect(tokenizer.current).toHaveProperty('value', 'aaa\nb');
+        expect(tokenizer.current.lineBreaks).toBe(1);
+        expect(tokenizer.walk()).toHaveProperty('type', 'IDENTIFIER');
+        expect(tokenizer.current.line).toBe(2);
     });
 });

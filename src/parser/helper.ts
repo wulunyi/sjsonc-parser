@@ -143,7 +143,7 @@ export function endLocation(token: moo.Token): Location {
     const lastStrLen = last(arr)!.length;
 
     return {
-        line: addSubtract1(token.line, len),
+        line: add(token.line, token.lineBreaks),
         column: ifElse(
             equalOne,
             always(addSubtract1(lastStrLen, token.col)),
