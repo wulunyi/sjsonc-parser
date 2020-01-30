@@ -1,6 +1,6 @@
 {
     "name": "sjsonc-parser",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "parser json/jsonc/object",
     "main": "lib/index.js",
     "types": "types/index.d.ts",
