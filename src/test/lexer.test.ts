@@ -65,7 +65,9 @@ describe('Tokenizer', () => {
     });
 
     it('scanner IDENTIFIER', () => {
-        const tokenizer = Lexer.create(`aaa true null false`);
+        const tokenizer = Lexer.create(
+            `aaa true null false _aaa aaaAaaa aaa_aaa`
+        );
         expect(tokenizer.walk()).toHaveProperty('type', 'IDENTIFIER');
         expect(tokenizer.current).toHaveProperty('value', 'aaa');
         expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
@@ -77,6 +79,15 @@ describe('Tokenizer', () => {
         expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
         expect(tokenizer.walk()).toHaveProperty('type', 'FALSE');
         expect(tokenizer.current).toHaveProperty('value', 'false');
+        expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
+        expect(tokenizer.walk()).toHaveProperty('type', 'IDENTIFIER');
+        expect(tokenizer.current).toHaveProperty('value', '_aaa');
+        expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
+        expect(tokenizer.walk()).toHaveProperty('type', 'IDENTIFIER');
+        expect(tokenizer.current).toHaveProperty('value', 'aaaAaaa');
+        expect(tokenizer.walk()).toHaveProperty('type', 'WHITE_SPACE');
+        expect(tokenizer.walk()).toHaveProperty('type', 'IDENTIFIER');
+        expect(tokenizer.current).toHaveProperty('value', 'aaa_aaa');
     });
 
     it('scanner LineComment', () => {
