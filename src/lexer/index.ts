@@ -51,10 +51,10 @@ const lexer = moo.compile({
         },
     ],
     NUMBER: [
+        { match: /0\.\d*/ },
         { match: /0{1}/ },
         { match: /[1-9]\d*\.?\d*/ },
         { match: /\-[0-9]\d*\.?\d*/ },
-        { match: /0\.\d*/ },
     ],
     IDENTIFIER: {
         match: /[a-zA-Z_][a-zA-Z0-9_]*/,

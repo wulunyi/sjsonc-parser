@@ -44,7 +44,7 @@ describe('Tokenizer', () => {
     });
 
     it('scanner NumericLiteral', () => {
-        const tokenizer = Lexer.create(`0 1 1.1 -1 -0.1 -1.1`);
+        const tokenizer = Lexer.create(`0 1 1.1 -1 -0.1 -1.1 0.1`);
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
         expect(tokenizer.current).toHaveProperty('value', '0');
         tokenizer.walk();
@@ -62,6 +62,9 @@ describe('Tokenizer', () => {
         tokenizer.walk();
         expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
         expect(tokenizer.current).toHaveProperty('value', '-1.1');
+        tokenizer.walk();
+        expect(tokenizer.walk()).toHaveProperty('type', 'NUMBER');
+        expect(tokenizer.current).toHaveProperty('value', '0.1');
     });
 
     it('scanner IDENTIFIER', () => {
